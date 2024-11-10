@@ -25,96 +25,118 @@ class _CreateQueryScreenState extends State<CreateQueryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Create Query'),
+        foregroundColor: Colors.white,
         backgroundColor: Colors.blueAccent,
+        elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildTextField(
-                  label: 'Subject',
-                  onChanged: (value) => subject = value,
-                  validator: (value) => value!.isEmpty ? 'Please enter a subject' : null,
-                ),
-                SizedBox(height: 16),
-                _buildTextField(
-                  label: 'Description',
-                  maxLines: 5,
-                  onChanged: (value) => description = value,
-                  validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
-                ),
-                SizedBox(height: 16),
-                _buildDropdownField(
-                  label: 'Source',
-                  value: source,
-                  onChanged: (value) => setState(() => source = value!),
-                  items: ['WEBSITE', 'APP', 'EMAIL'].map((source) => DropdownMenuItem(
-                    value: source,
-                    child: Text(source),
-                  )).toList(),
-                ),
-                SizedBox(height: 16),
-                _buildDropdownField(
-                  label: 'Priority',
-                  value: priority,
-                  onChanged: (value) => setState(() => priority = value!),
-                  items: ['A', 'B', 'C'].map((priority) => DropdownMenuItem(
-                    value: priority,
-                    child: Text(priority),
-                  )).toList(),
-                ),
-                SizedBox(height: 16),
-                _buildDropdownField(
-                  label: 'Status',
-                  value: status,
-                  onChanged: (value) => setState(() => status = value!),
-                  items: ['NEW', 'IN_PROGRESS', 'WAITING', 'RESOLVED'].map((status) => DropdownMenuItem(
-                    value: status,
-                    child: Text(status),
-                  )).toList(),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            elevation: 5,
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   children: [
-                    Checkbox(
-                      value: isAnonymous,
-                      onChanged: (value) {
-                        setState(() {
-                          isAnonymous = value!;
-                          if (isAnonymous) {
-                            contactEmail = '';
-                            contactPhone = '';
-                          }
-                        });
-                      },
+                    _buildTextField(
+                      label: 'Subject',
+                      onChanged: (value) => subject = value,
+                      validator: (value) => value!.isEmpty ? 'Please enter a subject' : null,
                     ),
-                    Text('Submit Anonymously'),
+                    SizedBox(height: 16),
+                    _buildTextField(
+                      label: 'Description',
+                      maxLines: 5,
+                      onChanged: (value) => description = value,
+                      validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
+                    ),
+                    SizedBox(height: 16),
+                    _buildDropdownField(
+                      label: 'Source',
+                      value: source,
+                      onChanged: (value) => setState(() => source = value!),
+                      items: ['WEBSITE', 'APP', 'EMAIL'].map((source) => DropdownMenuItem(
+                        value: source,
+                        child: Text(source),
+                      )).toList(),
+                    ),
+                    SizedBox(height: 16),
+                    _buildDropdownField(
+                      label: 'Priority',
+                      value: priority,
+                      onChanged: (value) => setState(() => priority = value!),
+                      items: ['A', 'B', 'C'].map((priority) => DropdownMenuItem(
+                        value: priority,
+                        child: Text(priority),
+                      )).toList(),
+                    ),
+                    SizedBox(height: 16),
+                    _buildDropdownField(
+                      label: 'Status',
+                      value: status,
+                      onChanged: (value) => setState(() => status = value!),
+                      items: ['NEW', 'IN_PROGRESS', 'WAITING', 'RESOLVED'].map((status) => DropdownMenuItem(
+                        value: status,
+                        child: Text(status),
+                      )).toList(),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Checkbox(
+                          value: isAnonymous,
+                          onChanged: (value) {
+                            setState(() {
+                              isAnonymous = value!;
+                              if (isAnonymous) {
+                                contactEmail = '';
+                                contactPhone = '';
+                              }
+                            });
+                          },
+                        ),
+                        Text('Submit Anonymously', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                    if (!isAnonymous) ...[
+                      SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Contact Email',
+                        onChanged: (value) => contactEmail = value,
+                        validator: (value) => value!.isEmpty ? 'Please enter an email' : null,
+                      ),
+                      SizedBox(height: 16),
+                      _buildTextField(
+                        label: 'Contact Phone',
+                        onChanged: (value) => contactPhone = value,
+                        validator: (value) => value!.isEmpty ? 'Please enter a phone number' : null,
+                      ),
+                    ],
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: _submitQuery,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                        child: Text('Submit Query', style: TextStyle(fontSize: 16)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blueAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        elevation: 5,
+                      ),
+                    ),
                   ],
                 ),
-                if (!isAnonymous) ...[
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Contact Email',
-                    onChanged: (value) => contactEmail = value,
-                    validator: (value) => value!.isEmpty ? 'Please enter an email' : null,
-                  ),
-                  SizedBox(height: 16),
-                  _buildTextField(
-                    label: 'Contact Phone',
-                    onChanged: (value) => contactPhone = value,
-                    validator: (value) => value!.isEmpty ? 'Please enter a phone number' : null,
-                  ),
-                ],
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _submitQuery,
-                  child: Text('Submit Query'),
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -127,9 +149,17 @@ class _CreateQueryScreenState extends State<CreateQueryScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: Colors.blueAccent, fontSize: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blueAccent),
+          borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
       onChanged: onChanged,
@@ -141,9 +171,17 @@ class _CreateQueryScreenState extends State<CreateQueryScreen> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        labelStyle: TextStyle(color: Colors.blueAccent, fontSize: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.blueAccent),
+          borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey.shade400, width: 1),
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
       value: value,
@@ -233,5 +271,4 @@ class _CreateQueryScreenState extends State<CreateQueryScreen> {
       }
     }
   }
-
 }

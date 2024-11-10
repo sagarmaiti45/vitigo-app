@@ -51,7 +51,8 @@ class _HomePageState extends State<HomePage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('bearer_token');
     final response = await http.get(
-      Uri.parse('https://vitigo.learnknowdigital.com/api/doctors/specializations/'),
+      Uri.parse(
+          'https://vitigo.learnknowdigital.com/api/doctors/specializations/'),
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -72,7 +73,8 @@ class _HomePageState extends State<HomePage> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      print('Appointments Response: $data');  // Print the entire response for debugging
+      print(
+          'Appointments Response: $data'); // Print the entire response for debugging
 
       if (data is List) {
         setState(() {
@@ -102,9 +104,31 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    // Define a modern color palette
+    final Color primaryColor = Colors.blue.shade800;
+    final Color accentColor = Colors.blue.shade200;
+    final Color backgroundColor = Colors.grey.shade100;
+    final TextStyle headerStyle = TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.bold,
+      color: primaryColor,
+    );
+    final TextStyle sectionTitleStyle = TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: primaryColor,
+    );
+    final TextStyle itemTextStyle = TextStyle(
+      fontSize: 16,
+      color: Colors.grey.shade800,
+    );
+
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -112,21 +136,44 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header with welcome message and notification icon
+                // Header with welcome message and notification icon with badge
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     isLoading
-                        ? shimmerEffect(width: 200, height: 24) // Shimmer effect for user name
+                        ? shimmerEffect(
+                            width: 200,
+                            height: 24,
+                            borderRadius: BorderRadius.circular(12),
+                          ) // Shimmer effect for user name
                         : Text(
-                      'Hello, $fullName',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.notifications, color: Colors.blue),
-                      onPressed: () {
-                        // Add notification functionality here
-                      },
+                            'Hello, $fullName',
+                            style: headerStyle,
+                          ),
+                    Stack(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.notifications, color: primaryColor),
+                          onPressed: () {
+                            // Add notification functionality here
+                          },
+                        ),
+                        Positioned(
+                          right: 8,
+                          top: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -135,94 +182,149 @@ class _HomePageState extends State<HomePage> {
 
                 // Search box for doctors
                 isLoading
-                    ? shimmerEffect(width: double.infinity, height: 50)
+                    ? shimmerEffect(
+                        width: double.infinity,
+                        height: 50,
+                        borderRadius: BorderRadius.circular(12),
+                      )
                     : TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search for doctors',
-                    prefixIcon: Icon(Icons.search),
-                    filled: true,
-                    fillColor: Colors.blue.shade50,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
+                        decoration: InputDecoration(
+                          hintText: 'Search for doctors',
+                          prefixIcon: Icon(Icons.search, color: primaryColor),
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.filter_list, color: primaryColor),
+                            onPressed: () {
+                              // Add filter functionality here
+                              print("Filter icon pressed");
+                            },
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(vertical: 15),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
 
                 SizedBox(height: 20),
 
                 // Categories section
                 Text(
                   'Categories',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: sectionTitleStyle,
                 ),
                 SizedBox(height: 10),
                 isLoading
-                    ? shimmerEffect(width: double.infinity, height: 50)
+                    ? shimmerEffect(
+                        width: double.infinity,
+                        height: 80,
+                        borderRadius: BorderRadius.circular(12),
+                      )
                     : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: categories
-                        .map((category) => Container(
-                      margin: EdgeInsets.only(right: 10),
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
-                        borderRadius: BorderRadius.circular(10),
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: categories.map((category) {
+                            String iconPath =
+                                'assets/icons/pharmacy.png'; // Default icon path
+                            // Here you could use different icons based on category if needed
+                            return Container(
+                              margin: EdgeInsets.only(right: 12),
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: accentColor,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    iconPath,
+                                    width: 30,
+                                    height: 30,
+                                    color: primaryColor, // Optional: tint color
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    category['name'],
+                                    style: itemTextStyle,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          Icon(Icons.category, color: Colors.blue),
-                          Text(category['name']),
-                        ],
-                      ),
-                    ))
-                        .toList(),
-                  ),
-                ),
 
                 SizedBox(height: 20),
 
                 // Image Carousel
                 isLoading
-                    ? shimmerEffect(width: double.infinity, height: 200)
+                    ? shimmerEffect(
+                        width: double.infinity,
+                        height: 200,
+                        borderRadius: BorderRadius.circular(12),
+                      )
                     : CarouselSlider(
-                  items: [
-                    'https://picsum.photos/400/200',
-                    'https://picsum.photos/400/200',
-                    'https://picsum.photos/400/200',
-                  ].map((url) => Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(url, fit: BoxFit.cover),
-                    ),
-                  )).toList(),
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    aspectRatio: 4 / 2,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _currentImageIndex = index;
-                      });
-                    },
-                  ),
-                ),
+                        items: [
+                          'https://picsum.photos/400/200',
+                          'https://picsum.photos/400/200',
+                          'https://picsum.photos/400/200',
+                        ]
+                            .map((url) => Container(
+                                  width: double.infinity,
+                                  margin: EdgeInsets.symmetric(horizontal: 5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.2),
+                                        spreadRadius: 2,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child:
+                                        Image.network(url, fit: BoxFit.cover),
+                                  ),
+                                ))
+                            .toList(),
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          aspectRatio: 16 / 9,
+                          enlargeCenterPage: true,
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _currentImageIndex = index;
+                            });
+                          },
+                        ),
+                      ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(3, (index) {
                     return Container(
-                      width: 8,
-                      height: 8,
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 2),
+                      width: 10,
+                      height: 10,
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _currentImageIndex == index ? Colors.blue : Colors.grey,
+                        color: _currentImageIndex == index
+                            ? primaryColor
+                            : Colors.grey.shade400,
                       ),
                     );
                   }),
@@ -231,120 +333,258 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(height: 20),
 
                 // Upcoming Appointments section
-                Text(
-                  'Upcoming Appointments',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Text(
+                      'Upcoming Appointments',
+                      style: sectionTitleStyle,
+                    ),
+                    SizedBox(
+                        width: 10), // Increased spacing between text and dot
+                    Container(
+                      width: 10, // Size of the dot
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: Colors
+                            .green, // Green color to indicate availability
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 10),
                 isLoading
-                    ? shimmerEffect(width: double.infinity, height: 50)
+                    ? Column(
+                        children: List.generate(
+                          3,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: shimmerEffect(
+                              width: double.infinity,
+                              height: 50,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      )
                     : Column(
-                  children: appointments.map((appointment) {
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
-                        borderRadius: BorderRadius.circular(10),
+                        children: appointments.isNotEmpty
+                            ? appointments.map((appointment) {
+                                return Container(
+                                  margin: EdgeInsets.only(
+                                      bottom: 8), // Slim spacing
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 12), // Slim padding
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue
+                                        .shade100, // Single consistent background color
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.15),
+                                        spreadRadius: 2,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      // Circle avatar with initials or icon
+                                      CircleAvatar(
+                                        radius:
+                                            20, // Smaller avatar for slim design
+                                        backgroundColor:
+                                            primaryColor.withOpacity(0.2),
+                                        child: Text(
+                                          appointment['doctor']['full_name'][
+                                              0], // First initial of the doctor's name
+                                          style: TextStyle(
+                                            color: primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          width:
+                                              10), // Reduced spacing between avatar and text
+
+                                      // Appointment details
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              appointment['doctor']
+                                                  ['full_name'],
+                                              style: itemTextStyle.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 14, // Slimmer font
+                                                color: Colors
+                                                    .black87, // Darker color for readability
+                                              ),
+                                            ),
+                                            SizedBox(
+                                                height:
+                                                    2), // Reduced vertical space
+                                            Row(
+                                              children: [
+                                                Icon(Icons.calendar_today,
+                                                    size: 14,
+                                                    color:
+                                                        primaryColor), // Smaller icon
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  appointment['date'],
+                                                  style: itemTextStyle.copyWith(
+                                                    color: Colors
+                                                        .black54, // Muted color for date text
+                                                    fontSize:
+                                                        12, // Smaller font for date
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // Action icon
+                                      IconButton(
+                                        icon: Icon(Icons.more_vert,
+                                            color: primaryColor,
+                                            size:
+                                                18), // Smaller icon for slim design
+                                        onPressed: () {
+                                          // Add action (e.g., view appointment details)
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList()
+                            : [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "No upcoming appointments",
+                                    style: itemTextStyle.copyWith(
+                                        color: Colors.grey),
+                                  ),
+                                ),
+                              ],
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(appointment['doctor']['full_name']),
-                          Text(appointment['date']),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
 
                 SizedBox(height: 20),
 
                 // Best Specialists section
                 Text(
                   'Best Specialists',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: sectionTitleStyle,
                 ),
                 SizedBox(height: 10),
                 isLoading
-                    ? shimmerEffect(width: double.infinity, height: 50)
+                    ? Column(
+                        children: List.generate(
+                          3,
+                          (index) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: shimmerEffect(
+                              width: double.infinity,
+                              height: 80,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      )
                     : Column(
-                  children: specialists.map((specialist) {
-                    String? profilePicturePath = specialist['user']['profile_picture'];
+                        children: specialists.map((specialist) {
+                          String? profilePicturePath =
+                              specialist['user']['profile_picture'];
 
-                    // Construct the image URL conditionally
-                    String? imageUrl = (profilePicturePath != null && !profilePicturePath.startsWith('http'))
-                        ? baseImageUrl + profilePicturePath
-                        : profilePicturePath;
+                          // Construct the image URL conditionally
+                          String? imageUrl = (profilePicturePath != null &&
+                                  !profilePicturePath.startsWith('http'))
+                              ? baseImageUrl + profilePicturePath
+                              : profilePicturePath;
 
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade100,
-                        borderRadius: BorderRadius.circular(10),
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 12),
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage: imageUrl != null
+                                      ? NetworkImage(imageUrl)
+                                      : null,
+                                  backgroundColor: accentColor,
+                                  child: imageUrl == null
+                                      ? Icon(Icons.person,
+                                          color: Colors.white, size: 30)
+                                      : null,
+                                ),
+                                SizedBox(width: 16),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${specialist['user']['first_name']} ${specialist['user']['last_name']}',
+                                      style: itemTextStyle.copyWith(
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      specialist['qualification'],
+                                      style: itemTextStyle.copyWith(
+                                          color: Colors.grey.shade600),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
                       ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: imageUrl != null
-                                ? NetworkImage(imageUrl)
-                                : null,
-                            child: imageUrl == null ? Icon(Icons.person) : null,
-                          ),
-                          SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${specialist['user']['first_name']} ${specialist['user']['last_name']}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text(specialist['qualification']),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
               ],
             ),
           ),
         ),
       ),
-
-      // Floating Action Button for Booking Appointment
-      // Floating Action Button for Booking Appointment
-      // floatingActionButton: Container(
-      //   margin: EdgeInsets.only(bottom: 20, right: 0), // Adjust margins as needed
-      //   child: FloatingActionButton.extended(
-      //     onPressed: () {
-      //       // Navigate to the booking appointment page or show a dialog
-      //       // Navigator.push(context, MaterialPageRoute(builder: (context) => BookingAppointmentPage()));
-      //     },
-      //     backgroundColor: Colors.blue,
-      //     foregroundColor: Colors.white,
-      //     icon: Icon(Icons.add),
-      //     label: Text('Book Appointment'),
-      //     tooltip: 'Book Appointment',
-      //   ),
-      // ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
+}
 
-  // Function to create shimmer effect
-  Widget shimmerEffect({double? width, double? height}) {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        width: width,
-        height: height,
+
+// Function to create shimmer effect with border radius
+Widget shimmerEffect(
+    {double? width, double? height, BorderRadius? borderRadius}) {
+  return Shimmer.fromColors(
+    baseColor: Colors.grey.shade300,
+    highlightColor: Colors.grey.shade100,
+    child: Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: borderRadius ?? BorderRadius.circular(8),
       ),
-    );
-  }
+    ),
+  );
 }

@@ -72,7 +72,7 @@ class _AppointmentSummaryScreenState extends State<AppointmentSummaryScreen> {
 
           // Navigate back to DashboardScreen and set the appointments tab as selected
           Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => DashboardScreen(initialTabIndex: 1)), // 1 for Appointments
+            MaterialPageRoute(builder: (context) => DashboardScreen(initialTabIndex: 0)), // 1 for Appointments
                 (route) => false,
           );
         } else {

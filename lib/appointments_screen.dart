@@ -25,6 +25,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 
   Future<void> fetchAppointments() async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('bearer_token');
 
@@ -43,7 +46,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             setState(() {
               errorMessage = 'No appointments found.';
               appointments = [];
-              isLoading = false;
             });
           } else {
             setState(() {
@@ -57,21 +59,21 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
         } else {
           setState(() {
             errorMessage = 'Failed to load appointments: ${response.reasonPhrase}';
-            isLoading = false;
           });
         }
       } catch (error) {
         setState(() {
           errorMessage = 'An error occurred: $error';
-          isLoading = false;
         });
       }
     } else {
       setState(() {
         errorMessage = 'Token not found';
-        isLoading = false;
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> fetchAllTimeSlotDetails(String token) async {
@@ -79,10 +81,6 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       final timeSlotId = appointment['time_slot'];
       await fetchTimeSlotDetails(timeSlotId, token);
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   Future<void> fetchTimeSlotDetails(int timeSlotId, String token) async {
@@ -258,33 +256,37 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
         backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
       ),
-      body: isLoading
-          ? buildShimmerEffect()
-          : errorMessage != null
-          ? Center(
-        child: Text(
-          errorMessage!,
-          style: TextStyle(fontSize: 18, color: Colors.red),
-        ),
-      )
-          : ListView.builder(
-        itemCount: appointments.length,
-        itemBuilder: (context, index) {
-          final appointment = appointments[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AppointmentDetailsScreen(
-                    appointmentId: appointment['id'],
+      body: RefreshIndicator(
+        onRefresh: fetchAppointments, // Trigger fetchAppointments on refresh
+        color: Colors.blueAccent, // Set the color of the refresh icon
+        child: isLoading
+            ? buildShimmerEffect()
+            : errorMessage != null
+            ? Center(
+          child: Text(
+            errorMessage!,
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        )
+            : ListView.builder(
+          itemCount: appointments.length,
+          itemBuilder: (context, index) {
+            final appointment = appointments[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AppointmentDetailsScreen(
+                      appointmentId: appointment['id'],
+                    ),
                   ),
-                ),
-              );
-            },
-            child: buildAppointmentCard(appointment),
-          );
-        },
+                );
+              },
+              child: buildAppointmentCard(appointment),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

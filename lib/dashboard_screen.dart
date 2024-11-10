@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'user_info_screen.dart';
 import 'appointments_screen.dart';
-import 'home_page.dart'; // Import the HomePage
-import 'queries_screen.dart'; // Import the QueriesScreen
+import 'user_info_screen.dart';
+import 'home_page.dart';
+import 'queries_screen.dart';
+import 'menu_screen.dart';  // Import the MenuScreen
 
 class DashboardScreen extends StatefulWidget {
   final int? initialTabIndex;
@@ -15,29 +15,40 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0;
+  late final PageController _pageController;
+  int _selectedIndex = 2;
 
-  // Create instances of screens to maintain their state
-  late final List<Widget> _widgetOptions;
+  final List<String> _tabLabels = ["Appoints", "Profile", "Home", "Queries", "Menu"];  // Added "Menu"
+  final List<IconData> _tabIcons = [
+    Icons.event,
+    Icons.person,
+    Icons.home,
+    Icons.question_answer,
+    Icons.menu,  // Added menu icon
+  ];
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialTabIndex ?? 0;
+    _selectedIndex = widget.initialTabIndex ?? 2;
+    _pageController = PageController(initialPage: _selectedIndex);
+  }
 
-    // Initialize the _widgetOptions list
-    _widgetOptions = <Widget>[
-      HomePage(), // Use HomePage as the first screen
-      AppointmentsScreen(),
-      UserInfoScreen(),
-      QueriesScreen(), // Queries screen as the last tab
-    ];
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -51,35 +62,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Center(
-          child: _widgetOptions.elementAt(_selectedIndex), // Display the selected screen
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          children: [
+            AppointmentsScreen(),
+            UserInfoScreen(),
+            HomePage(),
+            QueriesScreen(),
+            MenuScreen(),  // MenuScreen added as a PageView child
+          ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blue.shade800,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.shade800,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            label: 'Appointments',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.question_answer),
-            label: 'Queries', // Replaces logout with queries
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white60,
-        onTap: _onItemTapped,
+        ),
+        child: BottomNavigationBar(
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white.withOpacity(0.7),
+          backgroundColor: Colors.blue.shade800,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          elevation: 8.0,
+          type: BottomNavigationBarType.fixed,
+          items: List.generate(5, (index) {  // Updated item count to 5
+            return BottomNavigationBarItem(
+              icon: Icon(
+                _tabIcons[index],
+                size: 28,
+              ),
+              label: _tabLabels[index],
+            );
+          }),
+        ),
       ),
     );
   }

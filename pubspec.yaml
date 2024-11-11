@@ -88,6 +88,9 @@ flutter:
     - assets/icons/pharmacy.png
     - assets/icons/chatbot.png
     - assets/icons/chat-bot.png
+    - assets/banner_1.png
+    - assets/banner_2.png
+    - assets/banner_3.png
 
   fonts:
     - family: Nunito

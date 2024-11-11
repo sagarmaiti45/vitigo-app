@@ -267,59 +267,63 @@ class _HomePageState extends State<HomePage> {
 
                 SizedBox(height: 20),
 
-                // Image Carousel
+                // Banner carousel section
                 isLoading
                     ? shimmerEffect(
-                        width: double.infinity,
-                        height: 200,
-                        borderRadius: BorderRadius.circular(12),
-                      )
+                  width: double.infinity,
+                  height: 200,
+                  borderRadius: BorderRadius.circular(12),
+                )
                     : CarouselSlider(
-                        items: [
-                          'https://picsum.photos/400/200',
-                          'https://picsum.photos/400/200',
-                          'https://picsum.photos/400/200',
-                        ]
-                            .map((url) => Container(
-                                  width: double.infinity,
-                                  margin: EdgeInsets.symmetric(horizontal: 5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
-                                        spreadRadius: 2,
-                                        blurRadius: 5,
-                                        offset: Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child:
-                                        Image.network(url, fit: BoxFit.cover),
-                                  ),
-                                ))
-                            .toList(),
-                        options: CarouselOptions(
-                          autoPlay: true,
-                          aspectRatio: 16 / 9,
-                          enlargeCenterPage: true,
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _currentImageIndex = index;
-                            });
-                          },
+                  items: [
+                    'assets/banner_1.png',
+                    'assets/banner_1.png',
+                    'assets/banner_1.png',
+                  ]
+                      .map((assetPath) => Container(
+                    margin: EdgeInsets.symmetric(horizontal: 5), // Small margin between images
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
                         ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        assetPath,
+                        fit: BoxFit.cover, // Use fitWidth to ensure the image scales proportionally
+                        width: double.infinity, // Ensures full width of container
+                        height: 200, // Fixed height for the container
                       ),
+                    ),
+                  ))
+                      .toList(),
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    aspectRatio: 2, // Maintain 400x200 ratio
+                    enlargeCenterPage: true,
+                    viewportFraction: 0.8, // Increase view of adjacent images
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        _currentImageIndex = index;
+                      });
+                    },
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(3, (index) {
                     return Container(
-                      width: 10,
-                      height: 10,
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                      width: 8,  // Smaller dot size
+                      height: 8,
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 3), // Adjust spacing
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: _currentImageIndex == index
@@ -566,6 +570,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

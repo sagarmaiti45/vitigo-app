@@ -44,6 +44,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   }
 
   Future<void> _fetchUserInfo() async {
+    setState(() {
+      isLoading = true; // Show loading indicator
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('bearer_token');
 
@@ -149,83 +153,88 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: errorMessage.isNotEmpty
-            ? Center(child: Text(errorMessage, style: TextStyle(color: Colors.red)))
-            : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWelcomeSection(),
-            SizedBox(height: 20),
-            _buildUserInfoCard(
-              'Personal Information',
-              [
-                _buildInfoRow(Icons.person, 'First Name:', firstName),
-                _buildInfoRow(Icons.person_outline, 'Last Name:', lastName),
-                _buildInfoRow(Icons.email, 'Email:', email),
-                _buildInfoRow(Icons.assignment_ind, 'Role:', role),
-              ],
-              IconButton(
-                icon: Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserInfoUpdateScreen(
-                        onUpdate: _fetchUserInfo,
+      body: RefreshIndicator(
+        onRefresh: _fetchUserInfo, // Triggers _fetchUserInfo on pull down
+        color: Colors.blue,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          physics: const AlwaysScrollableScrollPhysics(), // Allows pull to refresh even if content is not scrollable
+          child: errorMessage.isNotEmpty
+              ? Center(child: Text(errorMessage, style: TextStyle(color: Colors.red)))
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildWelcomeSection(),
+              SizedBox(height: 20),
+              _buildUserInfoCard(
+                'Personal Information',
+                [
+                  _buildInfoRow(Icons.person, 'First Name:', firstName),
+                  _buildInfoRow(Icons.person_outline, 'Last Name:', lastName),
+                  _buildInfoRow(Icons.email, 'Email:', email),
+                  _buildInfoRow(Icons.assignment_ind, 'Role:', role),
+                ],
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserInfoUpdateScreen(
+                          onUpdate: _fetchUserInfo,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 20),
-            _buildUserInfoCard(
-              'Patient Information',
-              [
-                _buildInfoRow(Icons.cake, 'Date of Birth:', dob),
-                _buildInfoRow(Icons.bloodtype, 'Blood Group:', bloodGroup),
-                _buildInfoRow(Icons.location_on, 'Address:', address),
-                _buildInfoRow(Icons.phone, 'Phone Number:', phoneNumber),
-                _buildInfoRow(Icons.contact_phone, 'Emergency Contact:', '$emergencyContactName ($emergencyContactNumber)'),
-                _buildInfoRow(Icons.access_time, 'Vitiligo Onset Date:', vitiligoOnsetDate),
-                _buildInfoRow(Icons.medical_services, 'Vitiligo Type:', vitiligoType),
-                _buildInfoRow(Icons.map, 'Affected Areas:', affectedBodyAreas),
-              ],
-              IconButton(
-                icon: Icon(Icons.arrow_forward, color: Colors.blue),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PatientInfoScreen(),
-                    ),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 20),
-            _buildUserInfoCard(
-              'Subscription Info',
-              [
-                _buildInfoRow(Icons.star, 'Tier Name:', tierName),
-                _buildInfoRow(Icons.calendar_today, 'Start Date:', startDate),
-                _buildInfoRow(Icons.calendar_today_outlined, 'End Date:', endDate),
-              ],
-            ),
-            SizedBox(height: 40),
-            Center(
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.logout),
-                label: Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, backgroundColor: Colors.redAccent,
+                    );
+                  },
                 ),
-                onPressed: _showLogoutDialog,
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              _buildUserInfoCard(
+                'Patient Information',
+                [
+                  _buildInfoRow(Icons.cake, 'Date of Birth:', dob),
+                  _buildInfoRow(Icons.bloodtype, 'Blood Group:', bloodGroup),
+                  _buildInfoRow(Icons.location_on, 'Address:', address),
+                  _buildInfoRow(Icons.phone, 'Phone Number:', phoneNumber),
+                  _buildInfoRow(Icons.contact_phone, 'Emergency Contact:', '$emergencyContactName ($emergencyContactNumber)'),
+                  _buildInfoRow(Icons.access_time, 'Vitiligo Onset Date:', vitiligoOnsetDate),
+                  _buildInfoRow(Icons.medical_services, 'Vitiligo Type:', vitiligoType),
+                  _buildInfoRow(Icons.map, 'Affected Areas:', affectedBodyAreas),
+                ],
+                IconButton(
+                  icon: Icon(Icons.arrow_forward, color: Colors.blue),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PatientInfoScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              _buildUserInfoCard(
+                'Subscription Info',
+                [
+                  _buildInfoRow(Icons.star, 'Tier Name:', tierName),
+                  _buildInfoRow(Icons.calendar_today, 'Start Date:', startDate),
+                  _buildInfoRow(Icons.calendar_today_outlined, 'End Date:', endDate),
+                ],
+              ),
+              SizedBox(height: 40),
+              Center(
+                child: ElevatedButton.icon(
+                  icon: Icon(Icons.logout),
+                  label: Text('Logout'),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.redAccent,
+                  ),
+                  onPressed: _showLogoutDialog,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
